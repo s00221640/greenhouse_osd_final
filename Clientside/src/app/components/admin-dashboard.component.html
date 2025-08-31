@@ -1,0 +1,26 @@
+<div class="container mt-4">
+    <h2>Admin Dashboard</h2>
+    <p><strong>Total Users:</strong> {{ totalUsers }}</p>
+    <p><strong>Total Plants:</strong> {{ totalPlants }}</p>
+  
+    <div *ngIf="adminError" class="alert alert-danger">
+      {{ adminError }}
+    </div>
+  
+    <div *ngFor="let user of groupedData" class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><strong>{{ user.email }}</strong></span>
+        <button class="btn btn-danger btn-sm" (click)="deleteUser(user.userId)">Delete User</button>
+      </div>
+      <ul class="list-group list-group-flush" *ngIf="user.plants.length > 0">
+        <li *ngFor="let plant of user.plants" class="list-group-item d-flex justify-content-between align-items-center">
+          {{ plant.name }} - {{ plant.species }}
+          <button class="btn btn-outline-danger btn-sm" (click)="deletePlant(plant._id)">Delete Plant</button>
+        </li>
+      </ul>
+      <div class="card-body" *ngIf="user.plants.length === 0">
+        <em>No plants found for this user.</em>
+      </div>
+    </div>
+  </div>
+  

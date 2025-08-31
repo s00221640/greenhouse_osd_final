@@ -1,0 +1,149 @@
+<div class="container mt-4">
+  <h1 class="heading">Welcome To The Greenhouse</h1>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="mb-3">My Plants</h3>
+      <ul class="list-group">
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          *ngFor="let plant of plants"
+          (click)="selectPlant(plant)"
+        >
+          <span>{{ plant.name }}</span>
+          <div class="btn-group">
+            <button
+              class="btn btn-sm btn-warning"
+              (click)="editPlant(plant._id!); $event.stopPropagation();"
+            >
+              Edit
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="deletePlant(plant._id!); $event.stopPropagation();"
+            >
+              Delete
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-md-6">
+      <h3 class="mb-3">Plant Details</h3>
+      <div *ngIf="selectedPlant" class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ selectedPlant?.name }}</h5>
+          <p><strong>Species:</strong> {{ selectedPlant?.species }}</p>
+          <p><strong>Planting Date:</strong> {{ selectedPlant?.plantingDate }}</p>
+          <p><strong>Watering Frequency:</strong>
+            {{ selectedPlant?.wateringFrequency }}
+            <span *ngIf="selectedPlant?.wateringFrequency === 1">- Nearly Never</span>
+            <span *ngIf="selectedPlant?.wateringFrequency === 2">- Weekly</span>
+            <span *ngIf="selectedPlant?.wateringFrequency === 3">- Daily</span>
+          </p>
+          <p><strong>Light Requirement:</strong> {{ selectedPlant?.lightRequirement || 'N/A' }}</p>
+
+          <div *ngIf="selectedPlant?.imageUrl">
+            <img [src]="selectedPlant.imageUrl" class="img-fluid mt-2" style="max-height: 200px;" />
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!selectedPlant" class="alert alert-info">
+        Select a plant to view details.
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h3 class="mb-3">Add a New Plant</h3>
+      <form (ngSubmit)="onSubmit()" class="form-inline" enctype="multipart/form-data">
+        <input
+          type="text"
+          class="form-control mb-2 mr-sm-2"
+          placeholder="Plant Name"
+          [(ngModel)]="newPlant.name"
+          name="name"
+          required
+        />
+        <input
+          type="text"
+          class="form-control mb-2 mr-sm-2"
+          placeholder="Species"
+          [(ngModel)]="newPlant.species"
+          name="species"
+          required
+        />
+        <input
+          type="date"
+          class="form-control mb-2 mr-sm-2"
+          [(ngModel)]="newPlant.plantingDate"
+          name="plantingDate"
+          required
+        />
+        <select
+          class="form-control mb-2 mr-sm-2"
+          [(ngModel)]="newPlant.wateringFrequency"
+          name="wateringFrequency"
+          required
+        >
+          <option [value]="1">1 (Low - Nearly Never)</option>
+          <option [value]="2">2 (Moderate - Weekly)</option>
+          <option [value]="3">3 (High - Daily)</option>
+        </select>
+        <select
+          class="form-control mb-2 mr-sm-2"
+          [(ngModel)]="newPlant.lightRequirement"
+          name="lightRequirement"
+          required
+        >
+          <option value="Full Sun">Full Sun</option>
+          <option value="Partial Shade">Partial Shade</option>
+          <option value="Low Light">Low Light</option>
+        </select>
+
+        <!-- Image Options Section -->
+        <div class="image-selection-container mb-2">
+          <div class="image-options">
+            <div class="option">
+              <label>Upload your own image:</label>
+              <input
+                type="file"
+                class="form-control"
+                (change)="onFileChange($event)"
+                accept="image/*"
+              />
+            </div>
+            
+            <div class="option-divider">OR</div>
+            
+            <div class="option">
+              <button 
+                type="button" 
+                (click)="toggleImageGallery()" 
+                class="btn btn-outline-success"
+              >
+                Choose from Gallery
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="showImageGallery">
+            <app-plant-image-gallery
+              (imageSelected)="onGalleryImageSelected($event)"
+              (close)="closeImageGallery()"
+            ></app-plant-image-gallery>
+          </div>
+
+          <div *ngIf="imagePreviewUrl" class="mt-2 image-preview">
+            <p class="mb-1">Preview:</p>
+            <img [src]="imagePreviewUrl" class="img-thumbnail" style="max-height: 120px;" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-2">Add Plant</button>
+      </form>
+    </div>
+  </div>
+</div>

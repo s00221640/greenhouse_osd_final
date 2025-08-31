@@ -1,0 +1,263 @@
+.almanac-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .almanac-title {
+    text-align: center;
+    color: #2e8b57;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px #6c9e73;
+  }
+  
+  /* Seasonal Banner */
+  .season-banner {
+    background-color: #e8f5e9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+    border-left: 5px solid #2e8b57;
+  }
+  
+  .season-info h2 {
+    color: #2e8b57;
+    margin-top: 0;
+  }
+  
+  .season-info p {
+    color: #444;
+    font-size: 1.1rem;
+  }
+  
+  /* Dashboard Statistics */
+  .dashboard-section {
+    margin-bottom: 30px;
+  }
+  
+  .dashboard-section h2 {
+    color: #2e8b57;
+    border-bottom: 2px solid #c8e6c9;
+    padding-bottom: 10px;
+  }
+  
+  .stats-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background-color: #f4fbf6;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 15px;
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .stat-card h3 {
+    color: #2e8b57;
+    margin-top: 0;
+    font-size: 1.2rem;
+  }
+  
+  .stat-value {
+    font-size: 2.5rem;
+    color: #388e3c;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .stat-card ul {
+    padding-left: 20px;
+    color: #444;
+  }
+  
+  .stat-card li {
+    margin-bottom: 5px;
+  }
+  
+  /* Watering Section */
+  .watering-section {
+    margin-bottom: 30px;
+  }
+  
+  .watering-section h2 {
+    color: #2e8b57;
+    border-bottom: 2px solid #c8e6c9;
+    padding-bottom: 10px;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 20px;
+    background-color: #f4fbf6;
+    border-radius: 8px;
+    color: #666;
+    font-style: italic;
+  }
+  
+  .water-table {
+    overflow-x: auto;
+  }
+  
+  .water-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .water-table th {
+    background-color: #c8e6c9;
+    color: #2e8b57;
+    text-align: left;
+    padding: 10px;
+  }
+  
+  .water-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e8f5e9;
+  }
+  
+  .water-table tr:hover {
+    background-color: #f4fbf6;
+  }
+  
+  .water-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .water-button:hover {
+    background-color: #388e3c;
+  }
+  
+  /* Calendar Section */
+  .calendar-section {
+    margin-bottom: 30px;
+  }
+  
+  .calendar-section h2 {
+    color: #2e8b57;
+    border-bottom: 2px solid #c8e6c9;
+    padding-bottom: 10px;
+  }
+  
+  .calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .calendar-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2e8b57;
+  }
+  
+  .calendar-nav {
+    background-color: #c8e6c9;
+    border: none;
+    color: #2e8b57;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  
+  .calendar-header {
+    background-color: #c8e6c9;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #2e8b57;
+  }
+  
+  .calendar-day {
+    height: 80px;
+    background-color: #f4fbf6;
+    border: 1px solid #e8f5e9;
+    padding: 5px;
+    position: relative;
+  }
+  
+  .calendar-day.empty {
+    background-color: #f5f5f5;
+  }
+  
+  .day-number {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #666;
+  }
+  
+  .watering-indicator {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    background-color: #c8e6c9;
+    color: #2e8b57;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  
+  /* History Section */
+  .history-section {
+    margin-bottom: 30px;
+  }
+  
+  .history-section h2 {
+    color: #2e8b57;
+    border-bottom: 2px solid #c8e6c9;
+    padding-bottom: 10px;
+  }
+  
+  .history-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .history-list li {
+    padding: 10px;
+    border-bottom: 1px solid #e8f5e9;
+    color: #444;
+  }
+  
+  .history-list li:last-child {
+    border-bottom: none;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .stats-container {
+      flex-direction: column;
+    }
+    
+    .calendar-grid {
+      font-size: 0.8rem;
+    }
+    
+    .calendar-day {
+      height: 60px;
+    }
+  }

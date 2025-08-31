@@ -1,0 +1,147 @@
+/* General Styling */
+body {
+    background-color: #f0f8f5; /* Subtle green background for the entire page */
+    font-family: Arial, sans-serif;
+  }
+  
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* List Group */
+  .list-group-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    border: 1px solid #98c379; /* Light green border */
+    background-color: #eafaf1; /* Soft green background */
+  }
+  
+  .list-group-item:hover {
+    background-color: #c9e6d3; /* Slightly darker green hover */
+    transform: scale(1.02); /* Small hover effect */
+  }
+  
+  /* Buttons */
+  .btn-warning {
+    background-color: #d4a373; /* Warm brown for edit */
+    border-color: #bf8f60;
+    color: white;
+  }
+  
+  .btn-warning:hover {
+    background-color: #bf8f60;
+  }
+  
+  .btn-danger {
+    background-color: #e06c75; /* Soft red for delete */
+    border-color: #d55b65;
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background-color: #d55b65;
+  }
+  
+  button {
+    background-color: #98c379;
+    border: 2px solid #6c9e73;
+    color: white;
+  }
+  
+  button:hover {
+    background-color: #6c9e73;
+  }
+  
+  /* Card */
+  .card {
+    border: 2px solid #98c379; /* Green border for cards */
+    background-color: #f4fbf6; /* Pale green background */
+    border-radius: 8px;
+    padding: 10px;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #2e8b57; /* Forest green */
+  }
+  
+  /* Form */
+  input[type="text"],
+  input[type="date"],
+  select {
+    border: 2px solid #98c379; /* Green borders for inputs */
+    border-radius: 5px;
+    background-color: #f4fbf6; /* Pale green */
+  }
+  
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: #6c9e73; /* Darker green when focused */
+    box-shadow: 0 0 5px #6c9e73;
+  }
+  
+  .alert {
+    background-color: #eafaf1;
+    color: #2e8b57;
+    font-size: 1.1rem;
+  }
+  
+  /* Heading */
+  .heading {
+    text-align: center;
+    color: #2e8b57;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px #6c9e73;
+  }
+  
+  .image-selection-container {
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f4fbf6;
+  }
+  
+  .image-options {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .option {
+    flex: 1;
+  }
+  
+  .option-divider {
+    font-weight: bold;
+    color: #6c9e73;
+  }
+  
+  .option label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2e8b57;
+  }
+  
+  .image-preview {
+    border-top: 1px solid #c8e6c9;
+    padding-top: 10px;
+  }
+  
+  .image-preview p {
+    color: #2e8b57;
+    font-weight: bold;
+  }
+  
+  .btn-outline-success {
+    color: #2e8b57;
+    border-color: #2e8b57;
+    transition: all 0.3s;
+  }
+  
+  .btn-outline-success:hover {
+    background-color: #2e8b57;
+    color: white;
+  }

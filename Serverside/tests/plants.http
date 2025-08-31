@@ -1,0 +1,84 @@
+### POST Request for a Plant
+## Expected result: A new plant is created in the database.
+POST http://localhost:3000/plants HTTP/1.1
+content-type: application/json
+
+{
+   "name": "Jack's new grapes ",
+   "species": "Grape Vines",
+   "wateringFrequency": 3,
+   "lightRequirement": "Direct sunlight"
+}
+
+###
+### PUT Request for a plant
+PUT http://localhost:3000/plants/674f2255d548891748a47fe5 HTTP/1.1
+content-type: application/json
+
+{
+   "name": "Updated Plant Name Test",
+   "species": "Ficus benjamina",
+   "wateringFrequency": 7,
+   "lightRequirement": "Full sun"
+}
+
+###
+### DELETE Request for a Plant (Delete by ID)
+## Expected result: The plant with the given ID is deleted.
+DELETE http://localhost:3000/plants/60c72b2f4f1a2b001c8e4d8a HTTP/1.1
+content-type: application/json
+
+###
+### GET Request for All Plants
+## Expected result: A list of all plants is retrieved.
+GET http://localhost:3000/plants HTTP/1.1
+
+###
+### GET Request for a Plant (Get by ID)
+## Expected result: Details of the plant with the given ID are retrieved.
+GET http://localhost:3000/plants/674f0b0cd548891748a47fe1 HTTP/1.1
+
+### Test User Registration
+POST http://localhost:3000/users/register
+Content-Type: application/json
+
+{
+  "username": "mytestuser3",
+  "email": "newtest@test.com",
+  "password": "password12"
+}
+
+
+### Test User Login
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "jack@test.com",
+  "password": "password123"
+}
+
+### Test User Login
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+GET http://localhost:3000/users/test HTTP/1.1
+
+###
+POST http://localhost:3000/plants
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NjRmZGY5NjllODYzM2RkMjE3YTEyOSIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsImlhdCI6MTczNDY5MDQzNCwiZXhwIjoxNzM0Njk0MDM0fQ.Zvy-Xgmc7wQbC0kUKOR3jCTUisndFeN4vYTsSS6TzM0
+Content-Type: application/json
+
+{
+  "name": "Basil",
+  "species": "Herb",
+  "plantingDate": "2024-12-20",
+  "wateringFrequency": 3,
+  "lightRequirement": "Full Sun"
+}

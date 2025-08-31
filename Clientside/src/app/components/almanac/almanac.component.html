@@ -1,0 +1,108 @@
+<div class="almanac-container">
+    <h1 class="almanac-title">Greenhouse Almanac</h1>
+  
+    <!-- Seasonal Banner -->
+    <div class="season-banner">
+      <div class="season-info">
+        <h2>Current Season: {{ currentSeason }}</h2>
+        <p>{{ seasonalTips }}</p>
+      </div>
+    </div>
+  
+    <!-- Dashboard Statistics -->
+    <div class="dashboard-section">
+      <h2>Garden Overview</h2>
+      <div class="stats-container">
+        <div class="stat-card">
+          <h3>Total Plants</h3>
+          <div class="stat-value">{{ totalPlants }}</div>
+        </div>
+  
+        <div class="stat-card">
+          <h3>By Watering Needs</h3>
+          <ul>
+            <li>Nearly Never: {{ plantsByWatering['Nearly Never'] }}</li>
+            <li>Weekly: {{ plantsByWatering['Weekly'] }}</li>
+            <li>Daily: {{ plantsByWatering['Daily'] }}</li>
+          </ul>
+        </div>
+  
+        <div class="stat-card">
+          <h3>By Light Requirements</h3>
+          <ul>
+            <li>Full Sun: {{ plantsByLight['Full Sun'] }}</li>
+            <li>Partial Shade: {{ plantsByLight['Partial Shade'] }}</li>
+            <li>Low Light: {{ plantsByLight['Low Light'] }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Watering Due Section -->
+    <div class="watering-section">
+      <h2>Plants Needing Water</h2>
+      <div *ngIf="plantsDueForWatering.length === 0" class="empty-state">
+        <p>All your plants are properly watered. Good job!</p>
+      </div>
+      <div *ngIf="plantsDueForWatering.length > 0" class="water-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Plant Name</th>
+              <th>Species</th>
+              <th>Watering Frequency</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plant of plantsDueForWatering">
+              <td>{{ plant.name }}</td>
+              <td>{{ plant.species }}</td>
+              <td>{{ getWateringFrequencyText(plant.wateringFrequency || 0) }}</td>
+              <td>
+                <button (click)="recordWatering(plant)" class="water-button">
+                  Water Now
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- Watering Calendar -->
+    <div class="calendar-section">
+      <h2>Watering Calendar</h2>
+      <div class="calendar-controls">
+        <button (click)="prevMonth()" class="calendar-nav">&lt;</button>
+        <span class="calendar-title">{{ monthNames[currentMonth] }} {{ currentYear }}</span>
+        <button (click)="nextMonth()" class="calendar-nav">&gt;</button>
+      </div>
+      <div class="calendar-grid">
+        <div class="calendar-header" *ngFor="let day of daysOfWeek">
+          {{ day }}
+        </div>
+        <div *ngFor="let calDay of calendarDays" class="calendar-day" [class.empty]="!calDay.day">
+          <div *ngIf="calDay.day" class="day-number">{{ calDay.day }}</div>
+          <div *ngIf="calDay.plants.length > 0" class="watering-indicator">
+            <span>{{ calDay.plants.length }} plants</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Recent Watering History -->
+    <div class="history-section">
+      <h2>Recent Watering History</h2>
+      <div *ngIf="wateringHistory.length === 0" class="empty-state">
+        <p>No watering events recorded yet.</p>
+      </div>
+      <div *ngIf="wateringHistory.length > 0" class="history-list">
+        <ul>
+          <li *ngFor="let event of wateringHistory.slice().reverse().slice(0, 5)">
+            {{ event.plantName }} watered on {{ event.date | date:'medium' }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>

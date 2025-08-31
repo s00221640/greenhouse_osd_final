@@ -1,0 +1,50 @@
+.dashboard-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0fdf4;
+    border: 1px solid #b6e2c6;
+    border-radius: 8px;
+  }
+  
+  h2 {
+    color: #1b5e20;
+    text-align: center;
+  }
+  
+  .section {
+    margin-top: 20px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+    background-color: #ffffff;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  button {
+    margin-left: 10px;
+    background-color: #ef5350;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #d32f2f;
+  }
+  
+  .error {
+    color: red;
+    text-align: center;
+  }
+  
