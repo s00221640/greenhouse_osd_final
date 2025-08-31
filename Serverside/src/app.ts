@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { existsSync, readdirSync, Dirent } from "fs";
 
-// load env (expects Serverside/.env when started from Serverside/)
+// Load env from Serverside/.env when running from Serverside/
 dotenv.config();
 
 const app = express();
@@ -23,12 +23,14 @@ if (!mongoUri) {
     .catch((e) => console.error("Mongo connect error:", e));
 }
 
-// --- API routes (mount BEFORE static) ----------------------------------------
+// --- API routes (MOUNT BEFORE STATIC / WILDCARD) -----------------------------
 import userRoutes from "./routes/userRoutes";
 import plantRoutes from "./routes/plantRoutes";
+import adminRoutes from "./routes/adminRoutes"; // <-- add admin
 
 app.use("/users", userRoutes);
 app.use("/plants", plantRoutes);
+app.use("/admin", adminRoutes); // <-- MUST be before static + SPA fallback
 
 // --- Health ------------------------------------------------------------------
 app.get("/health", (_req, res) => res.status(200).send("ok"));

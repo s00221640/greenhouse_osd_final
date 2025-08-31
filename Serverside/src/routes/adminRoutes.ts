@@ -1,72 +1,98 @@
-import express, { Request, Response, NextFunction } from 'express';
-import User from '../models/userModel';
-import Plant from '../models/plantModel';
-import { authenticateKey } from '../auth.middleware';
+import express, { Request, Response, NextFunction } from "express";
+import User from "../models/userModel";
+import Plant from "../models/plantModel";
+import { authenticateKey } from "../auth.middleware";
 
 const router = express.Router();
 
-const ADMIN_CODE = process.env.ADMIN_CODE || 'letmein2025';
+// Read from env, fall back for local dev
+const ADMIN_CODE = (process.env.ADMIN_CODE || "letmein2025").trim();
 
+/**
+ * JWT auth first (expects Authorization: Bearer <token>)
+ */
 router.use(authenticateKey);
 
+/**
+ * Then require admin code via header: x-admin-code
+ */
 router.use((req: Request, res: Response, next: NextFunction) => {
-  const code = req.headers['x-admin-code'];
-  if (code === ADMIN_CODE) {
-    next();
-  } else {
-    res.status(403).json({ message: 'Forbidden. Invalid admin code.' });
+  const headerVal = req.header("x-admin-code"); // coerces to string | null
+  const code = (headerVal || "").trim();
+
+  if (!code || code !== ADMIN_CODE) {
+    return res.status(401).json({ message: "Invalid admin code" });
   }
+  next();
 });
 
-router.get('/stats', async (req: Request, res: Response) => {
+/**
+ * GET /admin/stats
+ * Returns total users and total plants
+ */
+router.get("/stats", async (_req: Request, res: Response) => {
   try {
-    const totalUsers = await User.countDocuments();
-    const totalPlants = await Plant.countDocuments();
-    res.status(200).json({ totalUsers, totalPlants });
+    const [totalUsers, totalPlants] = await Promise.all([
+      User.countDocuments({}),
+      Plant.countDocuments({}),
+    ]);
+    return res.status(200).json({ totalUsers, totalPlants });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching stats', error });
+    return res.status(500).json({ message: "Error fetching stats", error });
   }
 });
 
-router.get('/all', async (req: Request, res: Response) => {
+/**
+ * GET /admin/all
+ * Returns all users (without password) and all plants
+ */
+router.get("/all", async (_req: Request, res: Response) => {
   try {
-    const users = await User.find({}, '-password');
-    const plants = await Plant.find();
-    res.status(200).json({ users, plants });
+    const [users, plants] = await Promise.all([
+      User.find({}, { password: 0 }).lean(),
+      Plant.find({}).lean(),
+    ]);
+    return res.status(200).json({ users, plants });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching users and plants', error });
+    return res.status(500).json({ message: "Error fetching users and plants", error });
   }
 });
 
-router.delete('/delete-user/:userId', async (req: Request, res: Response) => {
+/**
+ * DELETE /admin/delete-user/:userId
+ * Deletes a user and all of their plants.
+ * Supports both userId and userEmail field on plants (whichever your schema uses).
+ */
+router.delete("/delete-user/:userId", async (req: Request, res: Response) => {
   const { userId } = req.params;
+
   try {
+    const user = await User.findById(userId).lean();
     await User.findByIdAndDelete(userId);
-    await Plant.deleteMany({ userId });
-    res.status(200).json({ message: 'Deleted user and their plants.' });
+
+    // Build an $or to handle either schema style
+    const or: any[] = [{ userId }];
+    if (user?.email) or.push({ userEmail: user.email });
+
+    await Plant.deleteMany({ $or: or });
+
+    return res.status(200).json({ message: "User and their plants deleted" });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error });
+    return res.status(500).json({ message: "Error deleting user", error });
   }
 });
 
-router.delete('/delete-user/:userId', async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  try {
-    await User.findByIdAndDelete(userId);
-    await Plant.deleteMany({ userEmail: (await User.findById(userId))?.email });
-    res.status(200).json({ message: 'User and their plants deleted' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error });
-  }
-});
-
-router.delete('/delete-plant/:plantId', async (req: Request, res: Response) => {
+/**
+ * DELETE /admin/delete-plant/:plantId
+ * Deletes a single plant by id
+ */
+router.delete("/delete-plant/:plantId", async (req: Request, res: Response) => {
   const { plantId } = req.params;
   try {
     await Plant.findByIdAndDelete(plantId);
-    res.status(200).json({ message: 'Plant deleted' });
+    return res.status(200).json({ message: "Plant deleted" });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting plant', error });
+    return res.status(500).json({ message: "Error deleting plant", error });
   }
 });
 
