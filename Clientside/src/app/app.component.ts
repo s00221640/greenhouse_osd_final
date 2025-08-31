@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { AuthService } from './components/tempAuthService';
 import { environment } from '../environments/environment';
@@ -11,7 +11,7 @@ import { environment } from '../environments/environment';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule, HttpClientModule],
+  imports: [RouterModule, CommonModule, FormsModule], // ✅ Removed HttpClientModule
   template: `
     <nav *ngIf="authService.isLoggedIn()" style="display: flex; justify-content: center; background-color: #d8f3dc; padding: 10px;">
       <a routerLink="/" style="text-decoration: none; color: #2d6a4f; font-size: 1.2rem; font-weight: bold; margin-right: 20px;">Home</a>
@@ -54,7 +54,6 @@ export class AppComponent implements OnInit {
   adminError: string | null = null;
   isAdmin = false;
 
-  // same-origin in prod, http://localhost:3000 in dev
   private readonly API = environment.apiBase || '';
 
   constructor(
@@ -73,7 +72,6 @@ export class AppComponent implements OnInit {
   checkAuthStatus() {
     const token = localStorage.getItem('token');
 
-    // Clear invalid tokens
     if (token === 'null' || token === 'undefined') {
       localStorage.removeItem('token');
     }
@@ -114,13 +112,13 @@ export class AppComponent implements OnInit {
     this.authService.clearToken();
     this.currentUser = null;
     this.isAdmin = false;
+    localStorage.removeItem('adminCode'); // Clear admin code on logout
     this.router.navigate(['/login']);
   }
 
   verifyAdminCode(): void {
     const headers = this.authService.getAuthHeaders().set('x-admin-code', this.adminCode);
 
-    // *** IMPORTANT: use env-based base URL (no localhost) ***
     this.http
       .get<{ totalUsers: number; totalPlants: number }>(`${this.API}/admin/stats`, { headers })
       .subscribe({
@@ -128,6 +126,8 @@ export class AppComponent implements OnInit {
           this.isAdmin = true;
           this.showAdminPrompt = false;
           this.adminError = null;
+          localStorage.setItem('adminCode', this.adminCode); // ✅ Store for dashboard use
+          this.adminCode = ''; // Clear from component memory
         },
         error: () => {
           this.adminError = 'Incorrect admin code';

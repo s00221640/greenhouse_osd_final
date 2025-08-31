@@ -26,17 +26,34 @@ export class AdminDashboardComponent implements OnInit {
     this.loadUsersAndPlants();
   }
 
+  private getAdminHeaders() {
+    const adminCode = localStorage.getItem('adminCode');
+    if (!adminCode) {
+      this.adminError = 'No admin code found. Please verify admin access again.';
+      return null;
+    }
+    return this.authService.getAuthHeaders().set('x-admin-code', adminCode);
+  }
+
   loadStats(): void {
-    const headers = this.authService.getAuthHeaders().set('x-admin-code', 'letmein2025');
+    const headers = this.getAdminHeaders();
+    if (!headers) return;
+
     this.http.get<{ totalUsers: number, totalPlants: number }>(`${this.API}/admin/stats`, { headers })
       .subscribe({
-        next: (res) => { this.totalUsers = res.totalUsers; this.totalPlants = res.totalPlants; },
+        next: (res) => { 
+          this.totalUsers = res.totalUsers; 
+          this.totalPlants = res.totalPlants; 
+          this.adminError = null;
+        },
         error: () => { this.adminError = 'Error fetching stats'; }
       });
   }
 
   loadUsersAndPlants(): void {
-    const headers = this.authService.getAuthHeaders().set('x-admin-code', 'letmein2025');
+    const headers = this.getAdminHeaders();
+    if (!headers) return;
+
     this.http.get<{ users: any[], plants: any[] }>(`${this.API}/admin/all`, { headers })
       .subscribe({
         next: (res) => {
@@ -45,20 +62,37 @@ export class AdminDashboardComponent implements OnInit {
             userId: user._id,
             plants: res.plants.filter(plant => plant.userEmail === user.email)
           }));
+          this.adminError = null;
         },
         error: () => { this.adminError = 'Error fetching users and plants'; }
       });
   }
 
   deleteUser(userId: string): void {
-    const headers = this.authService.getAuthHeaders().set('x-admin-code', 'letmein2025');
+    const headers = this.getAdminHeaders();
+    if (!headers) return;
+
     this.http.delete(`${this.API}/admin/delete-user/${userId}`, { headers })
-      .subscribe({ next: () => this.loadUsersAndPlants() });
+      .subscribe({ 
+        next: () => {
+          this.loadUsersAndPlants();
+          this.adminError = null;
+        },
+        error: () => { this.adminError = 'Error deleting user'; }
+      });
   }
 
   deletePlant(plantId: string): void {
-    const headers = this.authService.getAuthHeaders().set('x-admin-code', 'letmein2025');
+    const headers = this.getAdminHeaders();
+    if (!headers) return;
+
     this.http.delete(`${this.API}/admin/delete-plant/${plantId}`, { headers })
-      .subscribe({ next: () => this.loadUsersAndPlants() });
+      .subscribe({ 
+        next: () => {
+          this.loadUsersAndPlants();
+          this.adminError = null;
+        },
+        error: () => { this.adminError = 'Error deleting plant'; }
+      });
   }
 }
