@@ -2,9 +2,8 @@
   "name": "greenhouse-osd",
   "private": true,
   "scripts": {
-    "build:client": "npm --prefix Clientside run build -- --configuration production --output-path ../Serverside/dist/client/browser",
-    "build:server": "npm --prefix Serverside run build",
-    "build": "npm run build:server && npm run build:client",
+    "build": "npm --prefix Serverside install --include=dev && npm --prefix Serverside run build && npm --prefix Clientside install --include=dev && npm --prefix Clientside run build -- --configuration production --output-path ../Serverside/dist/client",
     "start": "cd Serverside && node dist/app.js"
-  }
+  },
+  "engines": { "node": ">=20" }
 }
