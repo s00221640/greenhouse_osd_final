@@ -1,0 +1,10 @@
+{
+  "name": "greenhouse-osd",
+  "private": true,
+  "scripts": {
+    "build:client": "npm --prefix Clientside run build -- --configuration production --output-path ../Serverside/dist/client/browser",
+    "build:server": "npm --prefix Serverside run build",
+    "build": "npm run build:server && npm run build:client",
+    "start": "cd Serverside && node dist/app.js"
+  }
+}
