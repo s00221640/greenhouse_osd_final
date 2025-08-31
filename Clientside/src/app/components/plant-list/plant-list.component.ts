@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { PlantService, Plant } from '../../services/plant.service';
-import { AuthService } from '../tempAuthService'; 
+import { AuthService } from '../tempAuthService';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PlantImageGalleryComponent } from '../plant-image-gallery/plant-image-gallery.component';
+
+// NEW: visual helpers
+import { seasonFromDate, wateringStatus } from '../../utils/season.util';
 
 @Component({
   selector: 'app-plant-list',
@@ -27,7 +30,7 @@ export class PlantListComponent implements OnInit {
 
   imageFile: File | null = null;
   imagePreviewUrl: string | null = null;
-  showImageGallery: boolean = false;
+  showImageGallery = false;
   selectedGalleryImageUrl: string | null = null;
 
   constructor(
@@ -46,21 +49,34 @@ export class PlantListComponent implements OnInit {
         this.plants = data;
         console.log('Loaded plants:', this.plants);
       },
-      error: (err) => {
-        console.error('Error fetching plants:', err);
-      },
+      error: (err) => console.error('Error fetching plants:', err),
     });
   }
 
+  // ---------- Visual helpers for template ----------
+  seasonOf(p: Plant): string {
+    return seasonFromDate(p.plantingDate || '');
+  }
+
+  waterChip(p: Plant): { label: string; severity: 'ok' | 'soon' | 'due' | 'info' } {
+    return wateringStatus(p.plantingDate || '', p.wateringFrequency);
+  }
+
+  rowSeverityClass(p: Plant): string {
+    const s = this.waterChip(p).severity;
+    if (s === 'due') return 'row-due';
+    if (s === 'soon') return 'row-soon';
+    return '';
+  }
+  // -------------------------------------------------
+
   onFileChange(event: any): void {
     this.imageFile = event.target.files[0];
-    this.selectedGalleryImageUrl = null; // Clear gallery selection when uploading a file
+    this.selectedGalleryImageUrl = null;
 
     if (this.imageFile) {
       const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreviewUrl = reader.result as string;
-      };
+      reader.onload = () => (this.imagePreviewUrl = reader.result as string);
       reader.readAsDataURL(this.imageFile);
     } else {
       this.imagePreviewUrl = null;
@@ -74,7 +90,7 @@ export class PlantListComponent implements OnInit {
   onGalleryImageSelected(imageUrl: string): void {
     this.selectedGalleryImageUrl = imageUrl;
     this.imagePreviewUrl = imageUrl;
-    this.imageFile = null; // Clear file upload when gallery image is selected
+    this.imageFile = null;
     this.showImageGallery = false;
   }
 
@@ -84,20 +100,11 @@ export class PlantListComponent implements OnInit {
 
   async fetchImageAsFile(url: string): Promise<File | null> {
     try {
-      // For local assets, we need to use the full URL with origin
       const fullUrl = window.location.origin + '/' + url;
-      console.log('Fetching image from:', fullUrl);
-      
       const response = await fetch(fullUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-      }
-      
+      if (!response.ok) throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
       const blob = await response.blob();
-      
-      // Extract the filename from the URL path
       const fileName = url.split('/').pop() || 'plant-image.png';
-      
       return new File([blob], fileName, { type: 'image/png' });
     } catch (error) {
       console.error('Error fetching image as file:', error);
@@ -114,57 +121,37 @@ export class PlantListComponent implements OnInit {
     formData.append('lightRequirement', this.newPlant.lightRequirement || 'Full Sun');
 
     const user = this.authService.getUser();
-    if (user?.email) {
-      formData.append('userEmail', user.email);
-    }
+    if (user?.email) formData.append('userEmail', user.email);
 
-    // Handle either file upload or gallery image
     if (this.imageFile) {
       formData.append('image', this.imageFile);
     } else if (this.selectedGalleryImageUrl) {
-      // If a gallery image was selected, fetch it and convert to a file
       const imageFile = await this.fetchImageAsFile(this.selectedGalleryImageUrl);
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
-    }
-
-    for (const [key, value] of (formData as any).entries()) {
-      console.log(`${key}:`, value);
+      if (imageFile) formData.append('image', imageFile);
     }
 
     this.plantService.createPlant(formData).subscribe({
-      next: (data) => {
-        console.log('Plant created:', data);
+      next: () => {
         this.loadPlants();
         this.resetForm();
       },
-      error: (err) => {
-        console.error('Error creating plant:', err);
-      },
+      error: (err) => console.error('Error creating plant:', err),
     });
   }
 
   editPlant(id: string): void {
-    console.log('Edit plant with ID:', id);
     this.router.navigate(['/edit', id]);
   }
 
   deletePlant(id: string): void {
     this.plantService.deletePlant(id).subscribe({
-      next: () => {
-        console.log('Plant deleted:', id);
-        this.loadPlants();
-      },
-      error: (err) => {
-        console.error('Error deleting plant:', err);
-      },
+      next: () => this.loadPlants(),
+      error: (err) => console.error('Error deleting plant:', err),
     });
   }
 
   selectPlant(plant: Plant): void {
     this.selectedPlant = plant;
-    console.log('Selected plant:', this.selectedPlant);
   }
 
   resetForm(): void {

@@ -145,3 +145,38 @@ body {
     background-color: #2e8b57;
     color: white;
   }
+  /* Row attention state (based on watering) */
+.row-due  { box-shadow: 0 0 0 2px rgba(224,108,117,.7) inset; }
+.row-soon { box-shadow: 0 0 0 2px rgba(212,163,115,.7) inset; }
+
+/* Left/Right areas in list items */
+.item-left  { display: flex; align-items: center; gap: .5rem; }
+.item-right { display: flex; align-items: center; }
+
+/* Name emphasis */
+.name { font-weight: 600; }
+
+/* Season badge */
+.badge.season {
+  font-size: .75rem;
+  padding: .25rem .5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.season-spring { background:#e8f7e5; color:#2e7d32; border-color:#a5d6a7; }
+.season-summer { background:#fff3cd; color:#8a6d3b; border-color:#ffe08a; }
+.season-autumn { background:#fde7da; color:#9c4423; border-color:#f8b59a; }
+.season-winter { background:#e3f2fd; color:#1565c0; border-color:#90caf9; }
+
+/* Watering chip */
+.chip {
+  font-size: .75rem;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.chip-ok   { background:#e8f5e9; color:#2e7d32; border-color:#a5d6a7; }
+.chip-soon { background:#fff4e5; color:#8a6d3b; border-color:#ffd8a8; }
+.chip-due  { background:#fdecea; color:#b71c1c; border-color:#f5b5ae; }
+.chip-info { background:#eef2f7; color:#2f3a4a; border-color:#cfd8e3; }
