@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { existsSync, readdirSync, Dirent } from "fs";
 
+// load env (expects Serverside/.env when started from Serverside/)
 dotenv.config();
 
 const app = express();
@@ -22,17 +23,18 @@ if (!mongoUri) {
     .catch((e) => console.error("Mongo connect error:", e));
 }
 
-// --- API routes (add yours above the SPA fallback) ---------------------------
-// import authRouter from "./routes/authRoutes";
-// import plantRouter from "./routes/plantRoutes";
-// app.use("/api/auth", authRouter);
-// app.use("/api/plants", plantRouter);
+// --- API routes (mount BEFORE static) ----------------------------------------
+import userRoutes from "./routes/userRoutes";
+import plantRoutes from "./routes/plantRoutes";
+
+app.use("/users", userRoutes);
+app.use("/plants", plantRoutes);
 
 // --- Health ------------------------------------------------------------------
 app.get("/health", (_req, res) => res.status(200).send("ok"));
 
 // --- Static client (Angular) -------------------------------------------------
-// Try the usual places first; if not found, search Clientside/dist recursively.
+// Prefer Serverside/dist/client (our build target), but auto-fallback to common Angular outputs.
 function findIndexDir(root: string): string | undefined {
   try {
     const stack: string[] = [root];
