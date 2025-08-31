@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   template: `
     <div class="login-container">
       <h2 *ngIf="isLoginMode">Login</h2>
@@ -15,43 +16,19 @@ import { FormsModule } from '@angular/forms';
       <form (ngSubmit)="onSubmit()" class="login-form">
         <div *ngIf="!isLoginMode" class="form-group">
           <label for="username">Username:</label>
-          <input
-            type="text"
-            [(ngModel)]="username"
-            name="username"
-            class="form-control"
-            placeholder="Enter your username"
-          />
+          <input type="text" [(ngModel)]="username" name="username" class="form-control" placeholder="Enter your username"/>
         </div>
         <div class="form-group">
           <label for="email">Email:</label>
-          <input
-            type="email"
-            [(ngModel)]="email"
-            name="email"
-            required
-            class="form-control"
-            placeholder="Enter your email"
-          />
+          <input type="email" [(ngModel)]="email" name="email" required class="form-control" placeholder="Enter your email"/>
         </div>
         <div class="form-group">
           <label for="password">Password:</label>
-          <input
-            type="password"
-            [(ngModel)]="password"
-            name="password"
-            required
-            class="form-control"
-            placeholder="Enter your password"
-          />
+          <input type="password" [(ngModel)]="password" name="password" required class="form-control" placeholder="Enter your password"/>
         </div>
-        <button type="submit" class="btn btn-primary">
-          {{ isLoginMode ? 'Login' : 'Sign Up' }}
-        </button>
+        <button type="submit" class="btn btn-primary">{{ isLoginMode ? 'Login' : 'Sign Up' }}</button>
       </form>
-      <button (click)="toggleMode()" class="btn btn-link">
-        Switch to {{ isLoginMode ? 'Sign Up' : 'Login' }}
-      </button>
+      <button (click)="toggleMode()" class="btn btn-link">Switch to {{ isLoginMode ? 'Sign Up' : 'Login' }}</button>
       <p *ngIf="errorMessage" class="error text-danger">{{ errorMessage }}</p>
     </div>
   `,
@@ -103,20 +80,19 @@ import { FormsModule } from '@angular/forms';
   ],
 })
 export class LoginComponent {
-  username: string = '';
-  email: string = '';
-  password: string = '';
-  isLoginMode: boolean = true;
+  username = '';
+  email = '';
+  password = '';
+  isLoginMode = true;
   errorMessage: string | null = null;
 
-  private loginUrl = 'http://localhost:3000/users/login';
-  private signupUrl = 'http://localhost:3000/users/register';
+  private readonly API = environment.apiBase || '';
+  private loginUrl  = `${this.API}/users/login`;
+  private signupUrl = `${this.API}/users/register`;
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  toggleMode(): void {
-    this.isLoginMode = !this.isLoginMode;
-  }
+  toggleMode(): void { this.isLoginMode = !this.isLoginMode; }
 
   onSubmit(): void {
     const url = this.isLoginMode ? this.loginUrl : this.signupUrl;
@@ -124,27 +100,19 @@ export class LoginComponent {
       ? { email: this.email, password: this.password }
       : { username: this.username, email: this.email, password: this.password };
 
-    console.log('Submitting request:', payload);
-
     this.http.post<{ token?: string }>(url, payload).subscribe({
-      next: (response) => {
-        if (this.isLoginMode) {
-          localStorage.setItem('token', response.token!);
-          console.log('Token stored:', localStorage.getItem('token'));
-
-          // Delay to avoid token read race
-          setTimeout(() => {
-            this.router.navigate(['/']);
-          }, 100);
-        } else {
+      next: (res) => {
+        if (this.isLoginMode && res?.token) {
+          localStorage.setItem('token', res.token);
+          setTimeout(() => this.router.navigate(['/']), 100);
+        } else if (!this.isLoginMode) {
           alert('Signup successful! Please login.');
           this.isLoginMode = true;
         }
       },
       error: (err) => {
-        console.error('Error during request:', err);
         this.errorMessage = err.error?.message || 'An error occurred.';
-      },
+      }
     });
   }
 }
