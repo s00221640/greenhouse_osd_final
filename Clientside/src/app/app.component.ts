@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthService } from './components/tempAuthService';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+import { AuthService } from './components/tempAuthService';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule, HttpClientModule],
   template: `
     <nav *ngIf="authService.isLoggedIn()" style="display: flex; justify-content: center; background-color: #d8f3dc; padding: 10px;">
       <a routerLink="/" style="text-decoration: none; color: #2d6a4f; font-size: 1.2rem; font-weight: bold; margin-right: 20px;">Home</a>
@@ -52,6 +54,9 @@ export class AppComponent implements OnInit {
   adminError: string | null = null;
   isAdmin = false;
 
+  // same-origin in prod, http://localhost:3000 in dev
+  private readonly API = environment.apiBase || '';
+
   constructor(
     public authService: AuthService,
     private router: Router,
@@ -65,15 +70,14 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // Check if the user is logged in, redirect to login if not
   checkAuthStatus() {
     const token = localStorage.getItem('token');
-    
+
     // Clear invalid tokens
     if (token === 'null' || token === 'undefined') {
       localStorage.removeItem('token');
     }
-    
+
     if (!this.authService.isLoggedIn()) {
       console.log('Not logged in, redirecting to login page');
       this.router.navigate(['/login']);
@@ -88,10 +92,12 @@ export class AppComponent implements OnInit {
       try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
         this.currentUser = JSON.parse(jsonPayload);
         console.log('User info loaded:', this.currentUser);
       } catch (e) {
@@ -113,15 +119,19 @@ export class AppComponent implements OnInit {
 
   verifyAdminCode(): void {
     const headers = this.authService.getAuthHeaders().set('x-admin-code', this.adminCode);
-    this.http.get<{ totalUsers: number, totalPlants: number }>('http://localhost:3000/admin/stats', { headers }).subscribe({
-      next: () => {
-        this.isAdmin = true;
-        this.showAdminPrompt = false;
-        this.adminError = null;
-      },
-      error: () => {
-        this.adminError = 'Incorrect admin code';
-      }
-    });
+
+    // *** IMPORTANT: use env-based base URL (no localhost) ***
+    this.http
+      .get<{ totalUsers: number; totalPlants: number }>(`${this.API}/admin/stats`, { headers })
+      .subscribe({
+        next: () => {
+          this.isAdmin = true;
+          this.showAdminPrompt = false;
+          this.adminError = null;
+        },
+        error: () => {
+          this.adminError = 'Incorrect admin code';
+        }
+      });
   }
 }
